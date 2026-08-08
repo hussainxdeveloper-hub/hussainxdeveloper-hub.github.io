@@ -66,7 +66,7 @@
       text-decoration: none;
       letter-spacing: -0.5px;
     }
-    .nav-logo img { width: 32px; height: 32px; border-radius: 8px; }
+    .nav-logo img { width: 32px; height: 32px; border-radius: 8px; object-fit: cover; }
     .nav-links { display: flex; gap: 32px; list-style: none; }
     .nav-links a {
       color: var(--muted);
@@ -120,12 +120,13 @@
     }
 
     .hero-logo {
-      width: 96px;
-      height: 96px;
+      width: 120px;
+      height: 120px;
       border-radius: 22px;
       margin-bottom: 28px;
       box-shadow: 0 0 0 1px var(--border), 0 20px 60px rgba(245,197,66,0.15);
       animation: float 5s ease-in-out infinite;
+      object-fit: cover;
     }
     @keyframes float {
       0%, 100% { transform: translateY(0); }
@@ -494,7 +495,7 @@
       display: flex; align-items: center; gap: 10px;
       font-weight: 700; font-size: 1.1rem; margin-bottom: 10px;
     }
-    .footer-brand .logo-row img { width: 28px; height: 28px; border-radius: 7px; }
+    .footer-brand .logo-row img { width: 28px; height: 28px; border-radius: 7px; object-fit: cover; }
     .footer-brand p { font-size: 0.82rem; color: var(--muted); line-height: 1.7; }
     .footer-links-col h4 { font-size: 0.8rem; font-weight: 700; color: var(--white); margin-bottom: 14px; letter-spacing: 1px; text-transform: uppercase; }
     .footer-links-col a { display: block; font-size: 0.82rem; color: var(--muted); text-decoration: none; margin-bottom: 10px; transition: color 0.2s; }
@@ -562,7 +563,7 @@
 <!-- ═══ NAV ═══ -->
 <nav id="navbar">
   <a href="#" class="nav-logo">
-    <img src="1786179569015_image.png" alt="MonoNote logo" onerror="this.style.display='none'"/>
+    <img src="icon_launcher.png" alt="MonoNote logo" onerror="this.style.display='none'"/>
     MonoNote
   </a>
   <ul class="nav-links">
@@ -576,7 +577,7 @@
 
 <!-- ═══ HERO ═══ -->
 <section class="hero">
-  <img src="1786179569015_image.png" alt="MonoNote" class="hero-logo"
+  <img src="icon_launcher.png" alt="MonoNote" class="hero-logo"
        onerror="this.style.background='#1a1a1a'; this.style.border='1px solid #333'"/>
   <p class="hero-eyebrow">Privacy-First Productivity</p>
   <h1>Your notes. Your vault.<br/><span>Nobody else's business.</span></h1>
@@ -847,7 +848,7 @@
   <div class="footer-top">
     <div class="footer-brand">
       <div class="logo-row">
-        <img src="1786179569015_image.png" alt="MonoNote" onerror="this.style.display='none'"/>
+        <img src="icon_launcher.png" alt="MonoNote" onerror="this.style.display='none'"/>
         MonoNote
       </div>
       <p>A privacy-first productivity app for Android. Built with care by Hussain.</p>
@@ -863,8 +864,8 @@
 
     <div class="footer-links-col">
       <h4>Legal</h4>
-      <a href="#">Privacy Policy</a>
-      <a href="#">Terms & Conditions</a>
+      <a href="https://hussainxdeveloper-hub.github.io/mononote-privacy-policy/">Privacy Policy</a>
+      <a href="https://hussainxdeveloper-hub.github.io/mononote-terms-conditions/">Terms & Conditions</a>
     </div>
 
     <div class="footer-links-col">
@@ -877,8 +878,8 @@
   <div class="footer-bottom">
     <span>© 2026 MonoNote · Built by Hussain</span>
     <span>
-      <a href="#">Privacy Policy</a> &nbsp;·&nbsp;
-      <a href="#">Terms & Conditions</a>
+      <a href="https://hussainxdeveloper-hub.github.io/mononote-privacy-policy/">Privacy Policy</a> &nbsp;·&nbsp;
+      <a href="https://hussainxdeveloper-hub.github.io/mononote-terms-conditions/">Terms & Conditions</a>
     </span>
   </div>
 </footer>
