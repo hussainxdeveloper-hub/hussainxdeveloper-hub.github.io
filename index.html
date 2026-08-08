@@ -1,1 +1,925 @@
-google.com, pub-6954069167063139, DIRECT, f08c47fec0942fa0
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MonoNote — Write it. Lock it. Own it.</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:   #0a0a0a;
+      --surface: #111111;
+      --card:    #161616;
+      --border:  #222222;
+      --gold:    #f5c542;
+      --gold2:   #e8a020;
+      --white:   #f0f0f0;
+      --muted:   #888888;
+      --accent:  #1e90ff;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Poppins', sans-serif;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* ─── NOISE OVERLAY ─── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 40px;
+      background: rgba(10,10,10,0.85);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      transition: padding 0.3s;
+    }
+    nav.scrolled { padding: 12px 40px; }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--white);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+    .nav-logo img { width: 32px; height: 32px; border-radius: 8px; }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--white); }
+    .nav-cta {
+      background: var(--gold);
+      color: #000;
+      padding: 9px 22px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .nav-cta:hover { background: var(--gold2); transform: translateY(-1px); }
+
+    /* ─── HERO ─── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* radial glow */
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -60%);
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, rgba(245,197,66,0.07) 0%, transparent 70%);
+      pointer-events: none;
+      animation: pulse-glow 6s ease-in-out infinite alternate;
+    }
+    @keyframes pulse-glow {
+      from { opacity: 0.6; transform: translate(-50%, -60%) scale(1); }
+      to   { opacity: 1;   transform: translate(-50%, -60%) scale(1.15); }
+    }
+
+    .hero-logo {
+      width: 96px;
+      height: 96px;
+      border-radius: 22px;
+      margin-bottom: 28px;
+      box-shadow: 0 0 0 1px var(--border), 0 20px 60px rgba(245,197,66,0.15);
+      animation: float 5s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-10px); }
+    }
+
+    .hero-eyebrow {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 16px;
+      opacity: 0;
+      animation: fade-up 0.7s ease 0.2s forwards;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.6rem, 7vw, 5.5rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -2px;
+      max-width: 800px;
+      opacity: 0;
+      animation: fade-up 0.7s ease 0.35s forwards;
+    }
+    .hero h1 span { color: var(--gold); }
+
+    .hero-sub {
+      margin-top: 20px;
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      color: var(--muted);
+      max-width: 540px;
+      font-weight: 400;
+      opacity: 0;
+      animation: fade-up 0.7s ease 0.5s forwards;
+    }
+
+    .hero-actions {
+      margin-top: 40px;
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+      opacity: 0;
+      animation: fade-up 0.7s ease 0.65s forwards;
+    }
+
+    .btn-primary {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--gold);
+      color: #000;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 0 0 rgba(245,197,66,0.4);
+      animation: cta-pulse 2.5s ease infinite 1.5s;
+    }
+    @keyframes cta-pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(245,197,66,0.4); }
+      70%  { box-shadow: 0 0 0 14px rgba(245,197,66,0); }
+      100% { box-shadow: 0 0 0 0 rgba(245,197,66,0); }
+    }
+    .btn-primary:hover { background: var(--gold2); transform: translateY(-2px); }
+    .btn-primary svg { width: 20px; height: 20px; }
+
+    .btn-secondary {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      color: var(--white);
+      border: 1px solid var(--border);
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: border-color 0.2s, color 0.2s, transform 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--gold); color: var(--gold); transform: translateY(-2px); }
+
+    .hero-badges {
+      margin-top: 32px;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+      opacity: 0;
+      animation: fade-up 0.7s ease 0.8s forwards;
+    }
+    .badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .badge-dot {
+      width: 6px; height: 6px;
+      background: var(--gold);
+      border-radius: 50%;
+    }
+
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── SECTION COMMON ─── */
+    section { position: relative; z-index: 1; }
+    .section-inner { max-width: 1100px; margin: 0 auto; padding: 100px 24px; }
+
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -1px;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+    .section-desc {
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 520px;
+    }
+
+    /* ─── DIVIDER ─── */
+    .divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--border), transparent);
+      margin: 0 24px;
+    }
+
+    /* ─── FEATURES GRID ─── */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+      margin-top: 56px;
+    }
+
+    .feat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 28px;
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    .feat-card.visible {
+      animation: card-in 0.5s ease forwards;
+    }
+    @keyframes card-in {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .feat-card:hover {
+      border-color: rgba(245,197,66,0.35);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(245,197,66,0.08);
+    }
+    .feat-icon {
+      font-size: 2rem;
+      margin-bottom: 14px;
+      display: block;
+    }
+    .feat-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--white);
+    }
+    .feat-desc {
+      font-size: 0.875rem;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+    .feat-card.featured {
+      grid-column: span 2;
+      background: linear-gradient(135deg, #161616 0%, #1a1500 100%);
+      border-color: rgba(245,197,66,0.25);
+    }
+    @media (max-width: 700px) {
+      .feat-card.featured { grid-column: span 1; }
+    }
+
+    /* ─── SECURITY SECTION ─── */
+    .security-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+    @media (max-width: 768px) {
+      .security-wrap { grid-template-columns: 1fr; }
+    }
+    .security-list { list-style: none; margin-top: 32px; display: flex; flex-direction: column; gap: 16px; }
+    .security-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+    .sec-icon {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      background: rgba(245,197,66,0.08);
+      border: 1px solid rgba(245,197,66,0.2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+    .security-visual {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .sec-bar-row { display: flex; flex-direction: column; gap: 6px; }
+    .sec-bar-label { font-size: 0.78rem; color: var(--muted); display: flex; justify-content: space-between; }
+    .sec-bar-track { height: 6px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .sec-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold2), var(--gold));
+      border-radius: 99px;
+      width: 0%;
+      transition: width 1.4s cubic-bezier(0.16,1,0.3,1);
+    }
+
+    /* ─── PRICING ─── */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 56px;
+      max-width: 720px;
+    }
+    @media (max-width: 640px) { .pricing-grid { grid-template-columns: 1fr; } }
+
+    .price-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px;
+      position: relative;
+      transition: transform 0.3s, border-color 0.3s;
+    }
+    .price-card:hover { transform: translateY(-4px); }
+    .price-card.premium {
+      border-color: rgba(245,197,66,0.4);
+      background: linear-gradient(145deg, #161616 0%, #1a1500 100%);
+    }
+    .price-badge {
+      position: absolute;
+      top: -12px; right: 20px;
+      background: var(--gold);
+      color: #000;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 99px;
+      letter-spacing: 0.5px;
+    }
+    .price-label { font-size: 0.8rem; color: var(--muted); font-weight: 500; margin-bottom: 10px; }
+    .price-amount {
+      font-size: 2.8rem;
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      color: var(--white);
+      line-height: 1;
+    }
+    .price-amount span { font-size: 1rem; font-weight: 500; color: var(--muted); letter-spacing: 0; }
+    .price-period { font-size: 0.78rem; color: var(--muted); margin-top: 4px; margin-bottom: 20px; }
+    .price-perks { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .price-perks li { font-size: 0.85rem; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+    .price-perks li::before { content: '✓'; color: var(--gold); font-weight: 700; }
+    .trial-note {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .trial-note strong { color: var(--gold); }
+
+    /* ─── THEMES ─── */
+    .themes-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 40px;
+      flex-wrap: wrap;
+    }
+    .theme-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 8px 16px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--muted);
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .theme-chip:hover { border-color: var(--gold); color: var(--white); }
+    .theme-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+    /* ─── CTA STRIP ─── */
+    .cta-strip {
+      background: linear-gradient(135deg, #111 0%, #1a1500 50%, #111 100%);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .cta-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 90px 24px;
+      text-align: center;
+    }
+    .cta-inner h2 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      margin-bottom: 14px;
+    }
+    .cta-inner h2 span { color: var(--gold); }
+    .cta-inner p { color: var(--muted); margin-bottom: 36px; font-size: 1rem; }
+
+    /* ─── FOOTER ─── */
+    footer {
+      padding: 50px 24px 36px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .footer-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 32px;
+      padding-bottom: 36px;
+      border-bottom: 1px solid var(--border);
+    }
+    .footer-brand { max-width: 260px; }
+    .footer-brand .logo-row {
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 700; font-size: 1.1rem; margin-bottom: 10px;
+    }
+    .footer-brand .logo-row img { width: 28px; height: 28px; border-radius: 7px; }
+    .footer-brand p { font-size: 0.82rem; color: var(--muted); line-height: 1.7; }
+    .footer-links-col h4 { font-size: 0.8rem; font-weight: 700; color: var(--white); margin-bottom: 14px; letter-spacing: 1px; text-transform: uppercase; }
+    .footer-links-col a { display: block; font-size: 0.82rem; color: var(--muted); text-decoration: none; margin-bottom: 10px; transition: color 0.2s; }
+    .footer-links-col a:hover { color: var(--gold); }
+    .footer-bottom {
+      padding-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .footer-bottom a { color: var(--muted); text-decoration: none; }
+    .footer-bottom a:hover { color: var(--gold); }
+
+    /* ─── SCROLL REVEAL ─── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ─── STATS ROW ─── */
+    .stats-row {
+      display: flex;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      margin-top: 56px;
+      flex-wrap: wrap;
+    }
+    .stat-item {
+      flex: 1;
+      min-width: 160px;
+      padding: 32px 24px;
+      text-align: center;
+      border-right: 1px solid var(--border);
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-num {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--gold);
+      letter-spacing: -1px;
+      line-height: 1;
+    }
+    .stat-label { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
+
+    /* ─── MOBILE NAV HIDE LINKS ─── */
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      nav { padding: 16px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">
+    <img src="1786179569015_image.png" alt="MonoNote logo" onerror="this.style.display='none'"/>
+    MonoNote
+  </a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#security">Security</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="mailto:hussainxdeveloper@gmail.com">Contact</a></li>
+  </ul>
+  <a href="#YOUR_PLAY_STORE_LINK" class="nav-cta">Download Free</a>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <img src="1786179569015_image.png" alt="MonoNote" class="hero-logo"
+       onerror="this.style.background='#1a1a1a'; this.style.border='1px solid #333'"/>
+  <p class="hero-eyebrow">Privacy-First Productivity</p>
+  <h1>Your notes. Your vault.<br/><span>Nobody else's business.</span></h1>
+  <p class="hero-sub">
+    MonoNote replaces your notes app, password manager, and private photo vault — all in one place, encrypted and offline-first.
+  </p>
+  <div class="hero-actions">
+    <a href="#YOUR_PLAY_STORE_LINK" class="btn-primary">
+      <!-- Google Play icon -->
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.18 23.76c.37.2.8.2 1.18-.02l12.62-7.28-2.9-2.9-10.9 10.2zm-1.18-21v20.48l11.3-10.24L2 2.76zm15.74 8.72L4.36.24C3.97.02 3.55.03 3.18.24L14.1 11.15l3.46-1.67zm1.44 2.04l-3.56 1.72 3.56 3.56 1.9-1.1c.56-.32.56-1.1 0-1.42l-1.9-1.1-.0-.66z"/></svg>
+      Get it on Google Play
+    </a>
+    <a href="#features" class="btn-secondary">
+      Explore Features ↓
+    </a>
+  </div>
+  <div class="hero-badges">
+    <span class="badge"><span class="badge-dot"></span>Free to download</span>
+    <span class="badge"><span class="badge-dot"></span>No ads on Premium</span>
+    <span class="badge"><span class="badge-dot"></span>AES-256 encrypted</span>
+    <span class="badge"><span class="badge-dot"></span>3-day free trial</span>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ STATS ═══ -->
+<div class="section-inner" style="padding-top:70px; padding-bottom:70px;">
+  <div class="stats-row reveal">
+    <div class="stat-item">
+      <div class="stat-num">30+</div>
+      <div class="stat-label">Screens Built</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">6</div>
+      <div class="stat-label">Beautiful Themes</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">AES-256</div>
+      <div class="stat-label">Encryption Standard</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">100%</div>
+      <div class="stat-label">Local-First Privacy</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══ FEATURES ═══ -->
+<section id="features">
+  <div class="section-inner">
+    <p class="section-label reveal">Everything you need</p>
+    <h2 class="section-title reveal">Four apps.<br/>One subscription.</h2>
+    <p class="section-desc reveal">Most people juggle separate apps for notes, passwords, private media, and tasks. MonoNote replaces all of them — without the clutter or the cost.</p>
+
+    <div class="features-grid">
+
+      <div class="feat-card featured">
+        <span class="feat-icon">📝</span>
+        <div class="feat-title">Rich Notes Editor</div>
+        <div class="feat-desc">Bold, italic, underline, strikethrough, quotes, and code blocks. Pin notes, set reminders, lock individual notes with a PIN, and export as PDF. Search across everything instantly. Soft-delete with a trash that holds items for up to 30 days — so nothing disappears until you're ready.</div>
+      </div>
+
+      <div class="feat-card">
+        <span class="feat-icon">✅</span>
+        <div class="feat-title">Smart To-Do Lists</div>
+        <div class="feat-desc">Multiple lists, individual item reminders, a live completion progress bar, and bulk-delete selection mode. Task management that doesn't get in the way.</div>
+      </div>
+
+      <div class="feat-card">
+        <span class="feat-icon">🔐</span>
+        <div class="feat-title">Password Vault</div>
+        <div class="feat-desc">AES-256 encrypted. Protected by your master PIN, password, or biometric. The vault never leaves your device unencrypted — not even during cloud sync.</div>
+      </div>
+
+      <div class="feat-card">
+        <span class="feat-icon">🖼️</span>
+        <div class="feat-title">Safe Box (Media Vault)</div>
+        <div class="feat-desc">Import photos and videos into a completely hidden private folder. Original files are permanently removed from your gallery. Invisible to every file manager and gallery app on your phone.</div>
+      </div>
+
+      <div class="feat-card">
+        <span class="feat-icon">☁️</span>
+        <div class="feat-title">Cloud Sync & Google Drive Backup</div>
+        <div class="feat-desc">Real-time sync across all your devices via Supabase (Premium). Manual or automatic Google Drive backup — stored in a private folder only MonoNote can access.</div>
+      </div>
+
+      <div class="feat-card">
+        <span class="feat-icon">🔔</span>
+        <div class="feat-title">100% Local Notifications</div>
+        <div class="feat-desc">Reminders on notes, to-do lists, and individual list items. Entirely on-device — nothing is ever sent to any server. Timezone-aware and auto-reschedules after a device restart.</div>
+      </div>
+
+      <div class="feat-card">
+        <span class="feat-icon">🎨</span>
+        <div class="feat-title">6 Carefully Crafted Themes</div>
+        <div class="feat-desc">Pitch Black, Midnight Navy, Charcoal, Deep Teal, Midnight Brown, Slate Navy — each with full dark and light mode. AMOLED optimized. Switch anytime from Settings.</div>
+      </div>
+
+      <div class="feat-card">
+        <span class="feat-icon">⚡</span>
+        <div class="feat-title">Offline-First, Always Fast</div>
+        <div class="feat-desc">Everything works without an internet connection. Sync and backup are optional layers — the core app is fully functional the moment you open it.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ SECURITY ═══ -->
+<section id="security">
+  <div class="section-inner">
+    <div class="security-wrap">
+      <div>
+        <p class="section-label reveal">Built for privacy</p>
+        <h2 class="section-title reveal">Security isn't<br/>an afterthought.</h2>
+        <p class="section-desc reveal">Every sensitive piece of data in MonoNote is encrypted before it ever moves — or doesn't move at all. The server never sees your passwords in plaintext. Ever.</p>
+
+        <ul class="security-list reveal">
+          <li>
+            <span class="sec-icon">🛡️</span>
+            <div><strong style="color:var(--white)">AES-256-CBC encryption</strong><br/>All vault data encrypted with randomly generated IVs per call.</div>
+          </li>
+          <li>
+            <span class="sec-icon">🔑</span>
+            <div><strong style="color:var(--white)">End-to-end encrypted sync</strong><br/>Passwords are encrypted on-device before leaving. Supabase never holds plaintext.</div>
+          </li>
+          <li>
+            <span class="sec-icon">👁️</span>
+            <div><strong style="color:var(--white)">Biometric app lock</strong><br/>Lock the entire app or just the vault with fingerprint or face ID (Premium).</div>
+          </li>
+          <li>
+            <span class="sec-icon">🗂️</span>
+            <div><strong style="color:var(--white)">Row-Level Security (RLS)</strong><br/>Supabase database rules enforce that users can only access their own data.</div>
+          </li>
+          <li>
+            <span class="sec-icon">📁</span>
+            <div><strong style="color:var(--white)">Private media storage</strong><br/>.nomedia file hides Safe Box from every gallery and file manager on your phone.</div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="security-visual reveal" id="sec-vis">
+        <div style="font-size:0.8rem; font-weight:600; color:var(--muted); margin-bottom:8px; letter-spacing:1px; text-transform:uppercase;">Encryption Coverage</div>
+
+        <div class="sec-bar-row">
+          <div class="sec-bar-label"><span>Password Vault</span><span>AES-256</span></div>
+          <div class="sec-bar-track"><div class="sec-bar-fill" data-width="100"></div></div>
+        </div>
+        <div class="sec-bar-row">
+          <div class="sec-bar-label"><span>Cloud Sync</span><span>E2E</span></div>
+          <div class="sec-bar-track"><div class="sec-bar-fill" data-width="100"></div></div>
+        </div>
+        <div class="sec-bar-row">
+          <div class="sec-bar-label"><span>Local Storage</span><span>Hive AES</span></div>
+          <div class="sec-bar-track"><div class="sec-bar-fill" data-width="100"></div></div>
+        </div>
+        <div class="sec-bar-row">
+          <div class="sec-bar-label"><span>Google Drive Backup</span><span>Encrypted</span></div>
+          <div class="sec-bar-track"><div class="sec-bar-fill" data-width="100"></div></div>
+        </div>
+        <div class="sec-bar-row">
+          <div class="sec-bar-label"><span>Master PIN / Password</span><span>Hashed</span></div>
+          <div class="sec-bar-track"><div class="sec-bar-fill" data-width="100"></div></div>
+        </div>
+
+        <div style="margin-top:20px; padding:16px; background:rgba(245,197,66,0.06); border:1px solid rgba(245,197,66,0.15); border-radius:12px;">
+          <div style="font-size:0.78rem; color:var(--gold); font-weight:600; margin-bottom:4px;">Zero-knowledge server</div>
+          <div style="font-size:0.78rem; color:var(--muted);">Even we — the people who built MonoNote — cannot see what's inside your vault.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ THEMES ═══ -->
+<section>
+  <div class="section-inner" style="padding-top:80px; padding-bottom:80px;">
+    <p class="section-label reveal">Looks like you</p>
+    <h2 class="section-title reveal">Six themes. Every shade of dark.</h2>
+    <p class="section-desc reveal">Every theme comes with a full dark and light mode. The Pitch Black theme is AMOLED optimized — true blacks that save battery and are easy on the eyes at night.</p>
+    <div class="themes-row reveal">
+      <div class="theme-chip"><span class="theme-dot" style="background:#0a0a0a; border:1px solid #333"></span>Pitch Black</div>
+      <div class="theme-chip"><span class="theme-dot" style="background:#0d1b2a"></span>Midnight Navy</div>
+      <div class="theme-chip"><span class="theme-dot" style="background:#2b2b2b"></span>Charcoal</div>
+      <div class="theme-chip"><span class="theme-dot" style="background:#0d2b2b"></span>Deep Teal</div>
+      <div class="theme-chip"><span class="theme-dot" style="background:#1a0e08"></span>Midnight Brown</div>
+      <div class="theme-chip"><span class="theme-dot" style="background:#1a1f2b"></span>Slate Navy</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ PRICING ═══ -->
+<section id="pricing">
+  <div class="section-inner">
+    <p class="section-label reveal">Pricing</p>
+    <h2 class="section-title reveal">Simple. Transparent.<br/>Cancel anytime.</h2>
+    <p class="section-desc reveal">Start free — upgrade when you want more. Every plan starts with a 3-day free trial. We remind you on Day 2 before you're charged.</p>
+
+    <div class="pricing-grid reveal">
+
+      <div class="price-card">
+        <div class="price-label">FREE FOREVER</div>
+        <div class="price-amount">$0 <span>/mo</span></div>
+        <div class="price-period">No credit card needed</div>
+        <ul class="price-perks">
+          <li>Unlimited notes & to-dos</li>
+          <li>Password vault (local)</li>
+          <li>Safe Box (media vault)</li>
+          <li>Manual Google Drive backup</li>
+          <li>6 themes + dark/light mode</li>
+          <li>Local reminders & notifications</li>
+          <li>7-day trash retention</li>
+        </ul>
+      </div>
+
+      <div class="price-card premium">
+        <div class="price-badge">MOST POPULAR</div>
+        <div class="price-label">PREMIUM — YEARLY</div>
+        <div class="price-amount">$18.99 <span>/yr</span></div>
+        <div class="price-period">48% off monthly · ~$1.58/month</div>
+        <ul class="price-perks">
+          <li>Everything in Free</li>
+          <li>Real-time cloud sync</li>
+          <li>Auto Google Drive backup</li>
+          <li>Biometric app & vault lock</li>
+          <li>Note PIN lock</li>
+          <li>PDF export</li>
+          <li>30-day trash retention</li>
+          <li>Zero ads · VIP support</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="trial-note reveal" style="margin-top:24px;">
+      Monthly plan also available at <strong>$2.99/month</strong>. &nbsp;·&nbsp; <strong>3-day free trial</strong> on all plans. &nbsp;·&nbsp; Cancel anytime from Google Play.
+    </p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ CTA STRIP ═══ -->
+<section class="cta-strip">
+  <div class="cta-inner">
+    <h2 class="reveal">Stop forgetting.<br/><span>Start owning your data.</span></h2>
+    <p class="reveal">Free to download. No account required to start. Everything encrypted, everything private.</p>
+    <div class="reveal" style="display:flex; justify-content:center;">
+      <a href="#YOUR_PLAY_STORE_LINK" class="btn-primary" style="font-size:1rem; padding:16px 36px;">
+        <svg viewBox="0 0 24 24" fill="currentColor" style="width:22px;height:22px"><path d="M3.18 23.76c.37.2.8.2 1.18-.02l12.62-7.28-2.9-2.9-10.9 10.2zm-1.18-21v20.48l11.3-10.24L2 2.76zm15.74 8.72L4.36.24C3.97.02 3.55.03 3.18.24L14.1 11.15l3.46-1.67zm1.44 2.04l-3.56 1.72 3.56 3.56 1.9-1.1c.56-.32.56-1.1 0-1.42l-1.9-1.1-.0-.66z"/></svg>
+        Download on Google Play
+      </a>
+    </div>
+    <p style="margin-top:16px; font-size:0.8rem; color:var(--muted);">Android · Free download · 174 countries</p>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="logo-row">
+        <img src="1786179569015_image.png" alt="MonoNote" onerror="this.style.display='none'"/>
+        MonoNote
+      </div>
+      <p>A privacy-first productivity app for Android. Built with care by Hussain.</p>
+    </div>
+
+    <div class="footer-links-col">
+      <h4>Product</h4>
+      <a href="#features">Features</a>
+      <a href="#security">Security</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#YOUR_PLAY_STORE_LINK">Download</a>
+    </div>
+
+    <div class="footer-links-col">
+      <h4>Legal</h4>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms & Conditions</a>
+    </div>
+
+    <div class="footer-links-col">
+      <h4>Developer</h4>
+      <a href="mailto:hussainxdeveloper@gmail.com">hussainxdeveloper@gmail.com</a>
+      <a href="#YOUR_PLAY_STORE_LINK">Google Play Store</a>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <span>© 2026 MonoNote · Built by Hussain</span>
+    <span>
+      <a href="#">Privacy Policy</a> &nbsp;·&nbsp;
+      <a href="#">Terms & Conditions</a>
+    </span>
+  </div>
+</footer>
+
+<script>
+  // ─── Navbar shrink on scroll ───
+  const nav = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  // ─── Scroll reveal ───
+  const revealEls = document.querySelectorAll('.reveal, .feat-card');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        const delay = e.target.classList.contains('feat-card')
+          ? [...document.querySelectorAll('.feat-card')].indexOf(e.target) * 80
+          : 0;
+        setTimeout(() => {
+          e.target.classList.add('visible');
+        }, delay);
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  revealEls.forEach(el => observer.observe(el));
+
+  // ─── Security bars animate on reveal ───
+  const secVis = document.getElementById('sec-vis');
+  const barObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        document.querySelectorAll('.sec-bar-fill').forEach(bar => {
+          bar.style.width = bar.dataset.width + '%';
+        });
+        barObserver.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.3 });
+  if (secVis) barObserver.observe(secVis);
+</script>
+</body>
+</html>
