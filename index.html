@@ -455,12 +455,12 @@
     /* ─── PRICING ─── */
     .pricing-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(3, 1fr);
       gap: 20px;
       margin-top: 56px;
-      max-width: 720px;
+      max-width: 1050px;
     }
-    @media (max-width: 640px) { .pricing-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 900px) { .pricing-grid { grid-template-columns: 1fr; max-width: 420px; } }
 
     .price-card {
       background: var(--card);
@@ -917,10 +917,26 @@
       </div>
 
       <div class="price-card premium">
-        <div class="price-badge">MOST POPULAR</div>
+        <div class="price-label">PREMIUM — MONTHLY</div>
+        <div class="price-amount">$2.99 <span>/mo</span></div>
+        <div class="price-period">Billed monthly · Cancel anytime</div>
+        <ul class="price-perks">
+          <li>Everything in Free</li>
+          <li>Real-time cloud sync</li>
+          <li>Auto Google Drive backup</li>
+          <li>Biometric app & vault lock</li>
+          <li>Note PIN lock</li>
+          <li>PDF export</li>
+          <li>30-day trash retention</li>
+          <li>Zero ads · VIP support</li>
+        </ul>
+      </div>
+
+      <div class="price-card premium">
+        <div class="price-badge">BEST VALUE</div>
         <div class="price-label">PREMIUM — YEARLY</div>
         <div class="price-amount">$18.99 <span>/yr</span></div>
-        <div class="price-period">48% off monthly · ~$1.58/month</div>
+        <div class="price-period">~$1.58/month · Save 47%</div>
         <ul class="price-perks">
           <li>Everything in Free</li>
           <li>Real-time cloud sync</li>
@@ -935,7 +951,7 @@
     </div>
 
     <p class="trial-note reveal" style="margin-top:24px;">
-      Monthly plan also available at <strong>$2.99/month</strong>. &nbsp;·&nbsp; <strong>3-day free trial</strong> on all plans. &nbsp;·&nbsp; Cancel anytime from Google Play.
+      <strong>3-day free trial</strong> on all Premium plans. &nbsp;·&nbsp; Cancel anytime from Google Play. &nbsp;·&nbsp; No commitment required.
     </p>
   </div>
 </section>
